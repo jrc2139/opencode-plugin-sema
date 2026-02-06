@@ -4,13 +4,15 @@ Semantic code search plugin for OpenCode.
 
 ## Installation
 
-```bash
-# From npm
-npm install -g @jrc2139/opencode-plugin-sema
+Add to your `opencode.json`:
 
-# Or via OpenCode
-opencode plugins install @jrc2139/opencode-plugin-sema
+```json
+{
+  "plugin": ["@jrc2139/opencode-plugin-sema"]
+}
 ```
+
+The plugin is automatically installed from npm when OpenCode starts.
 
 ## Prerequisites
 
@@ -19,6 +21,8 @@ The `sema` binary must be installed (version 0.1.5 or later):
 ```bash
 curl -fsSL https://sema.sh/install.sh | sh
 ```
+
+That's it! Sema automatically builds the index on first search. No manual indexing required.
 
 ## Usage
 
@@ -50,9 +54,11 @@ sema -g "src/**/*.ts" "authentication"
 
 ## How It Works
 
-1. **Plugin Load**: Starts `sema serve` in the background
-2. **Search**: Queries are sent to the server for instant results (~50ms)
-3. **Shutdown**: Server is stopped when the session ends
+1. **Auto-Index**: First search automatically indexes the codebase (no manual `sema index` needed)
+2. **Keyword Search**: Fast, instant FTS-only index with no model loading (~5ms)
+3. **Hybrid Search**: Shows keyword results immediately while building semantic index in background
+4. **Server**: Runs in background for ~50ms response time, 30-minute idle timeout
+5. **Plugin Load**: Starts `sema serve` if needed, reuses existing server
 
 ## Tool Parameters
 
