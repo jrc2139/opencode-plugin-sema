@@ -16,7 +16,7 @@ The plugin is automatically installed from npm when OpenCode starts.
 
 ## Prerequisites
 
-The `sema` binary must be installed (version 0.1.5 or later):
+The `sema` binary must be installed (version 0.2.0 or later):
 
 ```bash
 curl -fsSL https://sema.sh/install.sh | sh
@@ -100,9 +100,21 @@ Or in `.sema/config.json`:
 
 ```json
 {
-    "respect_ignore": false
+    "respect_ignore": false,
+    "db": {
+        "mode": "hybrid",
+        "chunker": "ast"
+    }
 }
 ```
+
+## Configuration
+
+Optional settings in `.sema/config.json`:
+
+- **`db.mode`**: `"hybrid"` (default, semantic + keyword) or `"keyword"` (FTS only, fast)
+- **`db.chunker`**: `"ast"` (default, AST-based code splitting) or `"raw"` (line-based)
+- **`respect_ignore`**: `true` (default, respects .gitignore) or `false` (index everything)
 
 ## License
 
