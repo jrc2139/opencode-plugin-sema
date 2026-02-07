@@ -1,6 +1,6 @@
 {
   "name": "@jrc2139/opencode-plugin-sema",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Semantic code search plugin for OpenCode",
   "main": "src/plugin.ts",
   "scripts": {
