@@ -50,6 +50,7 @@ sema "database queries" ./backend/
 # With filters
 sema "error handling" -l zig -n 10
 sema -g "src/**/*.ts" "authentication"
+sema --exclude "**/tests/*" "main function"
 ```
 
 ## How It Works
@@ -69,6 +70,7 @@ sema -g "src/**/*.ts" "authentication"
 | `n` | number | No | Max results (default: 5) |
 | `lang` | string | No | Filter by language |
 | `glob` | string | No | Filter by file path glob (e.g., "src/**/*.ts") |
+| `exclude` | string | No | Exclude files matching glob pattern (e.g., "**/tests/*") |
 | `keyword` | boolean | No | Use BM25 text search (no model loading) |
 
 ## Search Modes

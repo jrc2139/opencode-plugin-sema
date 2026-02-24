@@ -86,6 +86,7 @@ export const SemaPlugin: Plugin = async ({ directory }) => {
           n: tool.schema.number().optional().describe("Maximum results (default: 5)"),
           lang: tool.schema.string().optional().describe("Filter by language (python, javascript, zig, etc.)"),
           glob: tool.schema.string().optional().describe("Filter by file path glob (e.g., 'src/**/*.ts')"),
+          exclude: tool.schema.string().optional().describe("Exclude files matching glob pattern (e.g., '**/tests/*')"),
           keyword: tool.schema.boolean().optional().describe("Use BM25 text search instead of semantic (faster, no model)"),
         },
         async execute(args) {
@@ -96,6 +97,7 @@ export const SemaPlugin: Plugin = async ({ directory }) => {
           if (args.n) cmd.push("-n", String(args.n))
           if (args.lang) cmd.push("-l", args.lang)
           if (args.glob) cmd.push("-g", args.glob)
+          if (args.exclude) cmd.push("--exclude", args.exclude)
 
           const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe" })
           const output = await new Response(proc.stdout).text()
