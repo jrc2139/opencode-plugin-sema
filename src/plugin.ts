@@ -110,6 +110,85 @@ export const SemaPlugin: Plugin = async ({ directory }) => {
           return output
         },
       }),
+      sema_find: tool({
+        description:
+          "Find symbol definitions in the codebase. Searches for function, class, struct, enum, or variable definitions. Requires a previously built index.",
+        args: {
+          symbol: tool.schema.string().describe("Symbol name to find (e.g., 'parseConfig', 'HttpClient')"),
+          kind: tool.schema.string().optional().describe("Filter by symbol kind (function, class, struct, enum, variable, etc.)"),
+          exported: tool.schema.boolean().optional().describe("Only show exported symbols"),
+          prefix: tool.schema.boolean().optional().describe("Treat symbol as prefix (e.g., 'parse' finds 'parseConfig', 'parseArgs')"),
+        },
+        async execute(args) {
+          const cmd = ["sema", "find", args.symbol]
+          if (args.kind) cmd.push("--kind", args.kind)
+          if (args.exported) cmd.push("--exported")
+          if (args.prefix) cmd.push("--prefix")
+
+          const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe", cwd: realDir })
+          const output = await new Response(proc.stdout).text()
+          const exitCode = await proc.exited
+
+          if (exitCode !== 0) {
+            const stderr = await new Response(proc.stderr).text()
+            return `Error: ${stderr || "sema find command failed"}`
+          }
+          return output
+        },
+      }),
+      sema_refs: tool({
+        description:
+          "Find all references to a symbol in the codebase. Shows where a function, class, or variable is used. Requires a previously built index.",
+        args: {
+          symbol: tool.schema.string().describe("Symbol name to find references for (e.g., 'parseConfig', 'HttpClient')"),
+        },
+        async execute(args) {
+          const cmd = ["sema", "refs", args.symbol]
+
+          const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe", cwd: realDir })
+          const output = await new Response(proc.stdout).text()
+          const exitCode = await proc.exited
+
+          if (exitCode !== 0) {
+            const stderr = await new Response(proc.stderr).text()
+            return `Error: ${stderr || "sema refs command failed"}`
+          }
+          return output
+        },
+      }),
+      sema_query: tool({
+        description:
+          "Structural code query with filters. Find code by kind, complexity, role, parent, or language. Requires a previously built index.",
+        args: {
+          kind: tool.schema.string().optional().describe("Filter by symbol kind (function, class, struct, enum, variable, etc.)"),
+          exported: tool.schema.boolean().optional().describe("Only show exported symbols"),
+          min_complexity: tool.schema.number().optional().describe("Minimum cyclomatic complexity"),
+          max_complexity: tool.schema.number().optional().describe("Maximum cyclomatic complexity"),
+          role: tool.schema.string().optional().describe("Filter by semantic role (declaration, reference, definition, call)"),
+          parent: tool.schema.string().optional().describe("Filter by parent symbol name"),
+          language: tool.schema.string().optional().describe("Filter by language (python, javascript, zig, etc.)"),
+        },
+        async execute(args) {
+          const cmd = ["sema", "query"]
+          if (args.kind) cmd.push("--kind", args.kind)
+          if (args.exported) cmd.push("--exported")
+          if (args.min_complexity !== undefined) cmd.push("--min-complexity", String(args.min_complexity))
+          if (args.max_complexity !== undefined) cmd.push("--max-complexity", String(args.max_complexity))
+          if (args.role) cmd.push("--role", args.role)
+          if (args.parent) cmd.push("--parent", args.parent)
+          if (args.language) cmd.push("--language", args.language)
+
+          const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe", cwd: realDir })
+          const output = await new Response(proc.stdout).text()
+          const exitCode = await proc.exited
+
+          if (exitCode !== 0) {
+            const stderr = await new Response(proc.stderr).text()
+            return `Error: ${stderr || "sema query command failed"}`
+          }
+          return output
+        },
+      }),
     },
   }
 }

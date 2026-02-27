@@ -26,7 +26,9 @@ That's it! Sema automatically builds the index on first search. No manual indexi
 
 ## Usage
 
-The plugin provides a `sema` tool that can be invoked by the LLM:
+The plugin provides multiple tools that can be invoked by the LLM:
+
+### Semantic Search
 
 ```
 Use sema to find where authentication is handled
@@ -53,6 +55,36 @@ sema -g "src/**/*.ts" "authentication"
 sema --exclude "**/tests/*" "main function"
 ```
 
+### Code Intelligence
+
+These commands require a previously built index (built automatically on first search):
+
+```
+Use sema_find to locate the HttpClient class definition
+Use sema_refs to show all calls to parseConfig
+Use sema_query to find all exported functions with complexity > 10
+```
+
+Terminal usage:
+
+```bash
+# Find symbol definitions
+sema find parseConfig
+sema find HttpClient --kind class
+sema find parse --prefix  # finds parseConfig, parseArgs, etc.
+sema find doWork --exported  # only exported symbols
+
+# Find symbol references
+sema refs parseConfig
+sema refs HttpClient
+
+# Structural queries
+sema query --kind function --min-complexity 10
+sema query --kind class --language python
+sema query --parent HttpClient  # methods of HttpClient
+sema query --role declaration --exported
+```
+
 ## How It Works
 
 1. **Auto-Index**: First search automatically indexes the codebase (no manual `sema index` needed)
@@ -63,6 +95,8 @@ sema --exclude "**/tests/*" "main function"
 
 ## Tool Parameters
 
+### sema (Semantic Search)
+
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `query` | string | Yes | Natural language query |
@@ -72,6 +106,33 @@ sema --exclude "**/tests/*" "main function"
 | `glob` | string | No | Filter by file path glob (e.g., "src/**/*.ts") |
 | `exclude` | string | No | Exclude files matching glob pattern (e.g., "**/tests/*") |
 | `keyword` | boolean | No | Use BM25 text search (no model loading) |
+
+### sema_find (Find Symbol Definitions)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `symbol` | string | Yes | Symbol name to find |
+| `kind` | string | No | Filter by kind (function, class, struct, enum, variable) |
+| `exported` | boolean | No | Only show exported symbols |
+| `prefix` | boolean | No | Treat symbol as prefix |
+
+### sema_refs (Find Symbol References)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `symbol` | string | Yes | Symbol name to find references for |
+
+### sema_query (Structural Code Query)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `kind` | string | No | Filter by kind (function, class, struct, etc.) |
+| `exported` | boolean | No | Only show exported symbols |
+| `min_complexity` | number | No | Minimum cyclomatic complexity |
+| `max_complexity` | number | No | Maximum cyclomatic complexity |
+| `role` | string | No | Semantic role (declaration, reference, definition, call) |
+| `parent` | string | No | Parent symbol name |
+| `language` | string | No | Filter by language |
 
 ## Search Modes
 
