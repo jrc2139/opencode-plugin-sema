@@ -63,6 +63,8 @@ These commands require a previously built index (built automatically on first se
 Use sema_find to locate the HttpClient class definition
 Use sema_refs to show all calls to parseConfig
 Use sema_query to find all exported functions with complexity > 10
+Use sema_outline to show the structure of src/engine/engine.zig
+Use sema_blast to see what would break if I change parseConfig
 ```
 
 Terminal usage:
@@ -77,6 +79,14 @@ sema find doWork --exported  # only exported symbols
 # Find symbol references
 sema refs parseConfig
 sema refs HttpClient
+
+# File outline with symbol nesting
+sema outline src/engine/engine.zig
+sema outline src/engine/engine.zig -v  # include signatures
+
+# Impact analysis
+sema blast parseConfig
+sema blast handleConnection
 
 # Structural queries
 sema query --kind function --min-complexity 10
@@ -121,6 +131,19 @@ sema query --role declaration --exported
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `symbol` | string | Yes | Symbol name to find references for |
+
+### sema_outline (File Outline)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | string | Yes | File path to show outline for |
+| `verbose` | boolean | No | Include function/method signatures |
+
+### sema_blast (Impact Analysis)
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `symbol` | string | Yes | Symbol name to analyze |
 
 ### sema_query (Structural Code Query)
 

@@ -156,6 +156,48 @@ export const SemaPlugin: Plugin = async ({ directory }) => {
           return output
         },
       }),
+      sema_outline: tool({
+        description:
+          "Show file skeleton with symbol nesting. Lists all symbols in a file with their line ranges, kinds, and export status. Use -v for signatures.",
+        args: {
+          file: tool.schema.string().describe("File path to show outline for (e.g., 'src/engine/engine.zig')"),
+          verbose: tool.schema.boolean().optional().describe("Include function/method signatures"),
+        },
+        async execute(args) {
+          const cmd = ["sema", "outline", args.file]
+          if (args.verbose) cmd.push("-v")
+
+          const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe", cwd: realDir })
+          const output = await new Response(proc.stdout).text()
+          const exitCode = await proc.exited
+
+          if (exitCode !== 0) {
+            const stderr = await new Response(proc.stderr).text()
+            return `Error: ${stderr || "sema outline command failed"}`
+          }
+          return output
+        },
+      }),
+      sema_blast: tool({
+        description:
+          "Impact analysis for a symbol. Shows where a symbol is defined and all files that reference it, grouped by file with reference counts sorted by most-impacted first.",
+        args: {
+          symbol: tool.schema.string().describe("Symbol name to analyze (e.g., 'search', 'handleConnection')"),
+        },
+        async execute(args) {
+          const cmd = ["sema", "blast", args.symbol]
+
+          const proc = spawn(cmd, { stdout: "pipe", stderr: "pipe", cwd: realDir })
+          const output = await new Response(proc.stdout).text()
+          const exitCode = await proc.exited
+
+          if (exitCode !== 0) {
+            const stderr = await new Response(proc.stderr).text()
+            return `Error: ${stderr || "sema blast command failed"}`
+          }
+          return output
+        },
+      }),
       sema_query: tool({
         description:
           "Structural code query with filters. Find code by kind, complexity, role, parent, or language. Requires a previously built index.",
