@@ -97,11 +97,12 @@ sema query --role declaration --exported
 
 ## How It Works
 
-1. **Auto-Index**: First search automatically indexes the codebase (no manual `sema index` needed)
+1. **Auto-Index**: First search builds a keyword (FTS) index automatically
 2. **Keyword Search**: Fast, instant FTS-only index with no model loading (~5ms)
-3. **Hybrid Search**: Shows keyword results immediately while building semantic index in background
-4. **Server**: Runs in background for ~50ms response time, 30-minute idle timeout
+3. **Hybrid Search**: Shows keyword results immediately. Run `sema index` for full semantic search
+4. **Server**: Auto-starts when embeddings exist, ~50ms response time, 30-minute idle timeout
 5. **Plugin Load**: Starts `sema serve` if needed, reuses existing server
+6. **Semantic Indexing**: Run `sema index .` to download the model and build embeddings (CPU-intensive, may take minutes on large codebases). Set `auto_embed: true` in `.sema/config.json` to automate this
 
 ## Tool Parameters
 
